@@ -46,6 +46,7 @@ extend-exclude = "alembic/versions"
 profile = "black"
 line_length = 100
 known_first_party = ["app", "tests"]
+extend_skip_glob = ["alembic/versions/*"]
 
 # ── 린터 / 타입체커 ──────────────────────────────────
 

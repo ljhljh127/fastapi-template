@@ -71,6 +71,7 @@ tests/
 ├── conftest.py                 SQLite 인메모리 엔진, get_db 오버라이드
 ├── test_health.py
 ├── test_error_handling.py      미처리 예외 응답 포맷, debug 모드 유출 방지
+├── test_pagination.py          Page 봉투, limit/offset 경계값
 └── domains/example/            example 도메인 API 테스트
 infra/compose/                  compose.yaml, .env.db
 infra/dockerfiles/              Dockerfile
