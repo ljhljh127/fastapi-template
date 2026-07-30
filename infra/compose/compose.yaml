@@ -1,16 +1,23 @@
+name: fastapi-template
+
 services:
   was:
     build:
       context: ../../
       dockerfile: infra/dockerfiles/Dockerfile
-    image: was
+    image: fastapi-template-was
     container_name: was
+    env_file:
+      - ../../.env
+    environment:
+      APP_ENV: dev
+      DB_HOST: postgres
+      DB_PORT: "5432"
     ports:
       - "8000:8000"
     volumes:
-      - ../../:/workspace/
-    environment:
-      - APP_ENV=dev
+      - ../../app:/workspace/app:ro
+      - ../../alembic:/workspace/alembic:ro
     command:
       - uvicorn
       - app.main:app
@@ -18,15 +25,28 @@ services:
       - 0.0.0.0
       - --port
       - "8000"
+      - --reload
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   postgres:
-    image: postgres:14
+    image: postgres:16-alpine
     container_name: postgres
-    command: postgres -c 'max_connections=250'
-    restart: always
-    volumes:
-      - ../postgres_volume:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    command: postgres -c max_connections=250
     env_file:
-          - .env.db
+      - .env.db
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

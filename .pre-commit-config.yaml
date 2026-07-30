@@ -1,17 +1,27 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
       - id: isort
-        language_version: python3
-        args: ["--profile", "black"]
-        exclude: "alembic/.*"
+        exclude: ^alembic/versions/
+
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3
-        exclude: "alembic/.*"
+        exclude: ^alembic/versions/
+
   - repo: local
     hooks:
       - id: pylint
@@ -19,6 +29,18 @@ repos:
         entry: pylint
         language: system
         types: [python]
-        exclude: "alembic/.*"
+        exclude: ^alembic/
 
+      - id: mypy
+        name: mypy
+        entry: mypy app tests
+        language: system
+        types: [python]
+        pass_filenames: false
 
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false

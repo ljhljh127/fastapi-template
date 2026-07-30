@@ -1,0 +1,93 @@
+# ── 패키지 정의 ──────────────────────────────────────
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi-template"
+version = "1.0.0"
+description = "FastAPI service template"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.32,<1.0",
+    "pydantic>=2.9,<3.0",
+    "pydantic-settings>=2.6,<3.0",
+    "sqlalchemy>=2.0.36,<2.1",
+    "alembic>=1.14,<2.0",
+    "psycopg[binary]>=3.2,<4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-cov>=6.0,<7.0",
+    "httpx>=0.28,<1.0",
+    "black==24.10.0",
+    "isort==5.13.2",
+    "pylint==3.3.1",
+    "mypy==1.13.0",
+    "pre-commit==4.0.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+# ── 포맷터 ──────────────────────────────────────────
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+extend-exclude = "alembic/versions"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["app", "tests"]
+
+# ── 린터 / 타입체커 ──────────────────────────────────
+
+[tool.pylint.main]
+py-version = "3.12"
+ignore-paths = ["alembic/.*"]
+jobs = 0
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+disable = [
+    "missing-module-docstring",
+    "too-few-public-methods",
+    "duplicate-code",
+]
+
+[tool.pylint.basic]
+docstring-min-length = 10
+no-docstring-rgx = "^(_|test_)"
+
+[tool.pylint.typecheck]
+ignored-modules = ["sqlalchemy.sql.functions"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+strict = true
+exclude = ["^alembic/"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_decorators = false
+
+# ── 테스트 ──────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["error::DeprecationWarning:app.*"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/main.py"]

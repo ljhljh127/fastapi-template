@@ -1,7 +1,29 @@
-"""
-/app/db/base.py
-"""
+from datetime import datetime
 
-# alembic 마이그레이션에 필요한 테이블을 이쪽에 import
-from app.db.base_class import Base  # pylint: disable=unused-import
-from app.models.example import Example  # pylint: disable=unused-import
+from sqlalchemy import DateTime, MetaData, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# 제약조건에 이름을 안 붙이면 DB가 임의로 정하고, alembic이 나중에 그걸 못 찾아 drop/alter에 실패한다.
+NAMING_CONVENTION = {
+    "ix": "ix_%(table_name)s_%(column_0_name)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
+
+class Base(DeclarativeBase):
+    metadata = MetaData(naming_convention=NAMING_CONVENTION)
+
+
+class TimestampMixin:
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )

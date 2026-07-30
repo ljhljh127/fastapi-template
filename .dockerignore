@@ -1,0 +1,27 @@
+.git
+.github
+
+# dockerignore는 gitignore와 달리 슬래시 없는 패턴을 컨텍스트 루트에서만 매칭한다. 중첩은 **/ 가 필요하다.
+**/__pycache__/
+**/*.py[cod]
+
+.venv/
+venv/
+
+**/*.egg-info/
+build/
+dist/
+
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+.env
+.env.*
+
+tests/
+
+.idea/
+.vscode/
+.DS_Store
